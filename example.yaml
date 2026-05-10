@@ -1,0 +1,78 @@
+substitutions:
+  project_version: "1.0.0"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ESPHome BLE OTA — Example Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Drop the `components/esp32_ble_ota` directory next to this file (or point
+# `external_components` to wherever you store it), then run:
+#
+#   esphome compile ble_ota_example.yaml
+#   esphome upload ble_ota_example.yaml   ← first upload via serial / WiFi
+#
+# Subsequent updates via BLE:
+#   python3 esp32_ble_ota_upload.py \
+#       --device "my-esp32-ble-ota" \
+#       [--password secret123] \
+#       .esphome/build/{device-name}/.pioenvs/my-esp32-ble-ota/firmware.ota.bin
+
+esphome:
+  name: my-esp32-ble-ota # this is the default BLE device name you'll want to target to connect to
+  friendly_name: My ESP32 BLE OTA
+  project:
+    name: slynn1324.my-esp32-ble-ota
+    version: ${project_version}
+
+esp32:
+  board: esp32dev
+  framework: 
+    type: esp-idf # Arduino is untested, but may work?  IDF should have better bluetooth throughput.
+    advanced:
+      minimum_chip_revision: "3.1" # optimizations for the ESP32-WROOM dev boards I have, may not apply to other boards.
+      sram1_as_iram: true
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+logger:
+  level: DEBUG
+
+# ── WiFi (optional — BLE OTA works without WiFi) ─────────────────────────────
+# wifi:
+#   ssid: !secret wifi_ssid
+#   password: !secret wifi_password
+
+esp32_ble:
+
+# ── BLE server (required — provides the GATT infrastructure) ─────────────────
+esp32_ble_server:
+ 
+# ── External component source ─────────────────────────────────────────────────
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [esp32_ble_ota]
+
+# ── OTA configuration ─────────────────────────────────────────────────────────
+ota:
+  # You can keep the standard WiFi OTA platform alongside BLE OTA:
+  # - platform: esphome
+  #   password: !secret ota_password
+
+  # BLE OTA platform — access is gated by BLE pairing
+  - platform: esp32_ble_ota
+    # optional configuration parameters
+    password: secret123 # optionally require a password to OTA, transmitted as part of the OTA process.  Don't confuse this with real security - if you want heightened security, set up BLE pairing/bonding instead or in addition to. 
+    #service_uuid: "424F5441-0001-1000-8000-00805F9B34FB"
+    #control_uuid: "424F5441-0002-1000-8000-00805F9B34FB"
+    #data_uuid: "424F5442-0003-1000-8000-00805F9B34FB"
+    #status_uuid: "424F5443-0004-1000-8000-00805F9B34FB"
+    #chunk_timeout: 3s
+    #max_chunk_size: 500
+    #progress_step: 5
+
+interval:
+  - interval: 10s
+    then:
+      - lambda: |-
+          ESP_LOGD("debug_interval", "hello 11.  version=${project_version}");
