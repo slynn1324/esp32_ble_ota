@@ -144,10 +144,6 @@ void ESP32BLEOTAComponent::loop() {
       // track a manual flag to gate the whole loop here, and only print this 'started' statement once
       this->service_started_ = true;
       ESP_LOGI(TAG, "ESP32 BLE OTA service started");
-      ESP_LOGI(TAG, "  Service : %s", this->service_uuid_);
-      ESP_LOGI(TAG, "    Control : %s", this->control_uuid_);
-      ESP_LOGI(TAG, "    Data    : %s", this->data_uuid_);
-      ESP_LOGI(TAG, "    Status  : %s", this->status_uuid_);
     }
   }
 
@@ -163,10 +159,10 @@ void ESP32BLEOTAComponent::loop() {
 
 void ESP32BLEOTAComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "ESP32 BLE OTA:");
-  ESP_LOGCONFIG(TAG, "  Service UUID : %s", this->service_uuid_);
-  ESP_LOGCONFIG(TAG, "    Control UUID : %s", this->control_uuid_);
-  ESP_LOGCONFIG(TAG, "    Data UUID    : %s", this->data_uuid_);
-  ESP_LOGCONFIG(TAG, "    Status UUID  : %s", this->status_uuid_);
+  ESP_LOGCONFIG(TAG, "  Service UUID : %s", this->service_uuid_.c_str());
+  ESP_LOGCONFIG(TAG, "    Control UUID : %s", this->control_uuid_.c_str());
+  ESP_LOGCONFIG(TAG, "    Data UUID    : %s", this->data_uuid_.c_str());
+  ESP_LOGCONFIG(TAG, "    Status UUID  : %s", this->status_uuid_.c_str());
   ESP_LOGCONFIG(TAG, "  Max chunk    : %u bytes", this->max_chunk_size_);
   ESP_LOGCONFIG(TAG, "  Timeout      : %u ms", this->chunk_timeout_ms_);
 }
